@@ -1,0 +1,52 @@
+version: '3.8'
+
+services:
+  db:
+    image: mariadb:latest
+    container_name: wordpress_db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: wordpress
+      MYSQL_USER: wordpressuser
+      MYSQL_PASSWORD: wordpresspassword
+    volumes:
+      - db_data:/var/lib/mysql
+
+  wordpress:
+    depends_on:
+      - db
+    image: wordpress:latest
+    container_name: wordpress_app
+    restart: always
+#    user: "1000:1000"
+    ports:
+      - "8080:80"
+    environment:
+      WORDPRESS_DB_HOST: db:3306
+      WORDPRESS_DB_USER: wordpressuser
+      WORDPRESS_DB_PASSWORD: wordpresspassword
+      WORDPRESS_DB_NAME: wordpress
+    volumes:
+      - wordpress_data:/var/www/html
+      - ./install-plugins.sh:/install-plugins.sh
+      - ./install-theme.sh:/install-theme.sh
+    entrypoint: ["sh", "-c", "apt-get update && apt-get install -y curl && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp && wp && docker-entrypoint.sh apache2-foreground"]
+#    entrypoint: ["/bin/sh", "-c"]
+#    command:
+#      - |
+#        wget https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar
+#        chmod +x wp-cli.phar
+#        ls -la
+#        mv wp-cli.phar /usr/local/bin/wp
+#        useradd -G www-data supervisor
+#        wp core install --url=example.com --title=Example --admin_user=supervisor --admin_password=strongpassword --admin_email=info@example.com
+#        pwd
+#        ls -la
+#        chmod +x /install-plugins.sh && chmod +x /install-theme.sh
+#        /install-plugins.sh
+#        /install-theme.sh
+
+volumes:
+  db_data:
+  wordpress_data:
