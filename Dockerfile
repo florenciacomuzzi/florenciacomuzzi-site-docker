@@ -1,4 +1,5 @@
-FROM wordpress:latest
+#FROM wordpress:latest
+FROM bitnami/wordpress
 
 # Install dependencies
 RUN apt-get update && apt-get install -y less mariadb-client sudo

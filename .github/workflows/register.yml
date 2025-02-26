@@ -1,0 +1,26 @@
+name: Build and Push to Linode Image Registry
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+jobs:
+  build-and-push:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Log in to Linode Container Registry
+        run: echo "${{ secrets.LINODE_ACCESS_TOKEN }}" | docker login registry.linode.com -u linode --password-stdin
+
+      - name: Build Docker image
+        run: |
+          docker build -t registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest .
+
+      - name: Push Docker image to Linode
+        run: |
+          docker push registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest
