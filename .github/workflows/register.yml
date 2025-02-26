@@ -1,4 +1,4 @@
-name: Build and Push to Linode Image Registry
+name: Build and Push to Linode and Docker Hub
 
 on:
   push:
@@ -14,13 +14,14 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Log in to Linode Container Registry
-        run: echo "${{ secrets.LINODE_ACCESS_TOKEN }}" | docker login registry.linode.com -u linode --password-stdin
+      - name: Log in to Docker Hub
+        run: echo "${{ secrets.DOCKER_HUB_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_HUB_USERNAME }}" --password-stdin
 
       - name: Build Docker image
         run: |
           docker build -t registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest .
+          docker tag registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/wordpress-app:latest
 
-      - name: Push Docker image to Linode
+      - name: Push Docker image to Docker Hub
         run: |
-          docker push registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/wordpress-app:latest
