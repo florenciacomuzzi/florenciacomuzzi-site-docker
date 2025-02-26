@@ -13,25 +13,50 @@ services:
     volumes:
       - db_data:/var/lib/mysql
 
-  wordpress:
-    depends_on:
-      - db
-    image: wordpress:latest
+  wordpresslocal:
+    image: debian:12
     container_name: wordpress_app
     restart: always
-#    user: "1000:1000"
+    user: "1000:1000"
     ports:
       - "8080:80"
     environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpressuser
-      WORDPRESS_DB_PASSWORD: wordpresspassword
-      WORDPRESS_DB_NAME: wordpress
+#      WORDPRESS_DB_HOST: db:3306
+#      WORDPRESS_DB_USER: wordpressuser
+#      WORDPRESS_DB_PASSWORD: wordpresspassword
+#      WORDPRESS_DB_NAME: wordpress
+      DOMAIN_NAME: docker.flosfreelancesite.com
     volumes:
       - wordpress_data:/var/www/html
-      - ./install-plugins.sh:/install-plugins.sh
-      - ./install-theme.sh:/install-theme.sh
-    entrypoint: ["sh", "-c", "apt-get update && apt-get install -y curl && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp && wp && docker-entrypoint.sh apache2-foreground"]
+#      - ./install-plugins.sh:/install-plugins.sh
+#      - ./install-theme.sh:/install-theme.sh
+      - ./install_wordpress.sh:/install_wordpress.sh
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        sudo apt update && sudo apt upgrade -y &&
+        sudo apt-get install sudo openssl -y &&
+        chmod +x install_wordpress.sh
+        ./install_wordpress.sh
+#  wordpress:
+#    depends_on:
+#      - db
+#    image: wordpress:latest
+#    container_name: wordpress_app
+#    restart: always
+#    user: "1000:1000"
+#    ports:
+#      - "8080:80"
+#    environment:
+#      WORDPRESS_DB_HOST: db:3306
+#      WORDPRESS_DB_USER: wordpressuser
+#      WORDPRESS_DB_PASSWORD: wordpresspassword
+#      WORDPRESS_DB_NAME: wordpress
+#    volumes:
+#      - wordpress_data:/var/www/html
+#      - ./install-plugins.sh:/install-plugins.sh
+#      - ./install-theme.sh:/install-theme.sh
+#    entrypoint: ["sh", "-c", "apt-get update && apt-get install -y curl && curl -O https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar && chmod +x wp-cli.phar && mv wp-cli.phar /usr/local/bin/wp && wp"]
 #    entrypoint: ["/bin/sh", "-c"]
 #    command:
 #      - |
