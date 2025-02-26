@@ -15,7 +15,6 @@ services:
       - db_data:/var/lib/mysql
 
   wordpress:
-#    image: wordpress:latest
     build: ./
     container_name: wordpress_app
     restart: always
