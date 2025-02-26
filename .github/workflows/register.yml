@@ -19,9 +19,8 @@ jobs:
 
       - name: Build Docker image
         run: |
-          docker build -t registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest .
-          docker tag registry.linode.com/${{ secrets.LINODE_USERNAME }}/wordpress-app:latest ${{ secrets.DOCKER_HUB_USERNAME }}/wordpress-app:latest
+          docker build -t ${{ secrets.DOCKER_HUB_USERNAME }}/florenciacomuzzi-site/wordpress-app:latest .
 
       - name: Push Docker image to Docker Hub
         run: |
-          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/wordpress-app:latest
+          docker push ${{ secrets.DOCKER_HUB_USERNAME }}/florenciacomuzzi-site/wordpress-app:latest
