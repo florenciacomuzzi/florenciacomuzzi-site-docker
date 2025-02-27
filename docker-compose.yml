@@ -1,35 +1,46 @@
-version: '3.8'
-
 services:
-  db:
-    image: mariadb:latest
-    container_name: wordpress_db
-    restart: always
-    environment:
-      MARIADB_DATABASE: wordpress
-      MARIADB_USER: wordpress
-      MARIADB_PASSWORD: wordpress
-      MARIADB_ROOT_PASSWORD: rootpassword
-      MARIADB_ROOT_HOST: '%'
+  mariadb:
+    image: docker.io/bitnami/mariadb:latest
+    container_name: mariadb
     volumes:
-      - db_data:/var/lib/mysql
-
-  wordpress:
-    build: ./
-    container_name: wordpress_app
-    restart: always
-    depends_on:
-      - db
+      - 'mariadb_data:/bitnami/mariadb'
+    environment:
+      - MARIADB_USER=bn_wordpress
+      - MARIADB_DATABASE=bitnami_wordpress
+      - MARIADB_PASSWORD=password
+      - MARIADB_ROOT_PASSWORD=rootpassword
     ports:
-      - "8080:80"
-    environment:
-      WORDPRESS_DB_HOST: db:3306
-      WORDPRESS_DB_USER: wordpress
-      WORDPRESS_DB_PASSWORD: wordpress
-      WORDPRESS_DB_NAME: wordpress
+      - '3306:3306'
+    networks:
+      - wp_network
+  wordpress:
+    image: docker.io/bitnami/wordpress:6
+    container_name: wordpress
+    restart: always
+    ports:
+       # TODO Expose http and https
+#      - 8443:443
+      - '8080:8080'
     volumes:
-      - wordpress_data:/var/www/html
-
+      - 'wordpress_data:/bitnami/wordpress'
+    depends_on:
+      - mariadb
+    environment:
+      - DOMAINNAME=localhost
+      - WORDPRESS_DATABASE_HOST=mariadb
+      - WORDPRESS_DATABASE_PORT_NUMBER=3306
+      - WORDPRESS_DATABASE_USER=bn_wordpress
+      - WORDPRESS_DATABASE_PASSWORD=password
+      - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+    networks:
+      - wp_network
 volumes:
-  db_data:
+  mariadb_data:
+    driver: local
   wordpress_data:
+    driver: local
+
+networks:
+  wp_network:
+    name: wp_network  # Forces Docker to use this exact name
+    driver: bridge
