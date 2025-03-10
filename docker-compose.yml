@@ -32,8 +32,25 @@ services:
       - WORDPRESS_DATABASE_USER=bn_wordpress
       - WORDPRESS_DATABASE_PASSWORD=password
       - WORDPRESS_DATABASE_NAME=bitnami_wordpress
+      - WORDPRESS_USERNAME=user # debug: these are defaults
+      - WORDPRESS_PASSWORD=bitnami # debug
+      - WORDPRESS_EMAIL=2yv3R@example.com
+      - WORDPRESS_FIRST_NAME=Wordpress
+      - WORDPRESS_LAST_NAME=Admin
     networks:
       - wp_network
+
+#  wordpress-cli:
+#      depends_on:
+#          - mariadb
+#          - wordpress
+#      image: 'wordpress:cli'
+#      entrypoint: wp
+#      user: xfs
+#      command: "/bin/sh -c ' sleep 10;  wp core install --url=\"http://localhost:8000\" --title=\"Sample Title\" --admin_name=admin --admin_password=admin --admin_email=you@domain.com '\n"
+#      volumes:
+#          - './wordpress:/var/www/html'
+#          - './docker/wordpress/php/php.ini:/usr/local/etc/php/conf.d/php.ini:ro'
 volumes:
   mariadb_data:
     driver: local
